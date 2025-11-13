@@ -23,6 +23,6 @@ def generate_website_qr_code(url, file_path):
 
 
 if __name__ == "__main__":
-    website_url = "https://the-garagem.vercel.app/"
+    website_url = "https://thumbs.dreamstime.com/b/dois-homens-se-abra%C3%A7ando-beijando-na-rua-270314533.jpg"
     output_file = "meu_qrcode_site.png"
     generate_website_qr_code(website_url, output_file)

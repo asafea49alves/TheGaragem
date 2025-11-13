@@ -1,4 +1,112 @@
 // script.js - Funcionalidades para The Garage
+// Inicialização baseada no index.html: associa produtos, botões, ícone do carrinho e cria overlay/carrinho se necessário
+(function() {
+    // Carrega biblioteca QRCode se não existir
+    if (typeof QRCode === 'undefined') {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        s.defer = true;
+        document.head.appendChild(s);
+    }
+
+    // Cria overlay global se não existir
+    if (!document.getElementById('overlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'overlay';
+        overlay.style.display = 'none';
+        overlay.addEventListener('click', () => {
+            const carrinhoEl = document.getElementById('carrinho');
+            if (carrinhoEl) carrinhoEl.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+        document.body.appendChild(overlay);
+    }
+
+    // Cria estrutura mínima do carrinho (caso index.html não tenha)
+    if (!document.getElementById('carrinho')) {
+        const carrinhoDiv = document.createElement('div');
+        carrinhoDiv.id = 'carrinho';
+        carrinhoDiv.style.display = 'none';
+        carrinhoDiv.innerHTML = `
+            <h3>Seu Carrinho (<span id="cart-count">0</span>)</h3>
+            <div id="carrinho-itens"></div>
+            <div class="carrinho-total">Total: R$ <span id="total">0.00</span></div>
+            <button onclick="finalizarCompra()">Finalizar Compra</button>
+        `;
+        document.body.appendChild(carrinhoDiv);
+    }
+
+    // Associar clique no ícone do carrinho (elemento com id 'cart-icon' no index.html)
+    const cartIcon = document.getElementById('cart-icon');
+    if (cartIcon) {
+        cartIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleCarrinho();
+        });
+    }
+
+    // Função utilitária para extrair dados de um card de produto
+    function extrairDadosProduto(el) {
+        const nome = el.dataset.nome || (el.querySelector('.titulo') && el.querySelector('.titulo').textContent) || '';
+        const precoAttr = el.dataset.preco || (el.querySelector('.preco') && el.querySelector('.preco').dataset.valor) || (el.querySelector('.preco') && el.querySelector('.preco').textContent) || '0';
+        const preco = parseFloat(String(precoAttr).replace(/[^0-9.,-]/g, '').replace(',', '.')) || 0;
+        const descricao = el.dataset.descricao || (el.querySelector('.descricao') && el.querySelector('.descricao').textContent) || '';
+        const imagem = el.dataset.imagem || (el.querySelector('img') && el.querySelector('img').src) || '';
+        return { nome, preco, descricao, imagem };
+    }
+
+    // Associa event listeners aos cards de produto (classe .produto no index.html)
+    document.querySelectorAll('.produto').forEach(card => {
+        const dados = extrairDadosProduto(card);
+
+        // Abrir modal ao clicar no card (mas permitir botões internos funcionarem)
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.qtd-btn') || e.target.closest('.add-cart') || e.target.closest('button')) return;
+            abrirModal(dados.nome, dados.descricao, dados.imagem, dados.preco);
+        });
+
+        // Botões de quantidade (se presentes)
+        const minus = card.querySelector('.qtd-minus');
+        const plus = card.querySelector('.qtd-plus');
+        const qtdSpan = card.querySelector('.qtd') || card.querySelector('.qtd-span');
+
+        if (minus && qtdSpan) {
+            minus.addEventListener('click', (e) => alterarQuantidade(e, dados.nome, -1));
+        }
+        if (plus && qtdSpan) {
+            plus.addEventListener('click', (e) => alterarQuantidade(e, dados.nome, +1));
+        }
+
+        // Botão "Adicionar ao carrinho" (classe .add-cart)
+        const addBtn = card.querySelector('.add-cart');
+        if (addBtn) {
+            addBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // garante que exista um elemento de quantidade com id esperado
+                const quantidadeId = `qtd-${dados.nome}`;
+                let qtdEl = document.getElementById(quantidadeId);
+                if (!qtdEl) {
+                    // tentativa de mapear a partir do card
+                    qtdEl = qtdSpan || document.createElement('span');
+                    qtdEl.id = quantidadeId;
+                    if (!qtdSpan) qtdEl.textContent = '1';
+                }
+                adicionarAoCarrinho(dados.nome, dados.preco);
+            });
+        }
+    });
+
+    // Atualiza exibição inicial
+    if (typeof atualizarCarrinho === 'function') {
+        atualizarCarrinho();
+    } else {
+        // mínima atualização se função não estiver disponível
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) cartCount.textContent = '0';
+        const totalSpan = document.getElementById('total');
+        if (totalSpan) totalSpan.textContent = '0.00';
+    }
+})();
 
 // Variáveis globais
 let carrinho = [];
@@ -184,7 +292,7 @@ function gerarQRCodePix() {
     const valor = total.toFixed(2);
     const descricao = 'Compra The Garage';
 
-    const pixString = `00020101021126360014BR.GOV.BCB.PIX0111${chavePix}5204000053039865404${valor}5802BR5913The Garage6009SAO PAULO62070503***6304`; 
+    const pixString = `00020101021126360014BR.GOV.BCB.PIX0111${chavePix}5204000053039865404${valor}`; 
     const qrcode = new QRCode(document.getElementById('qrcode'), {
         text: pixString,
         width: 256,

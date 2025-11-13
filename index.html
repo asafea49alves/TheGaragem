@@ -1,513 +1,884 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Garage - Catálogo de Sabores</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Para ícones -->
-    <style>
-        /* Paleta de cores: Marrom (#8B4513), Verde (#228B22), Bege (#F5F5DC) */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #F5F5DC 0%, #E8E8D0 100%); /* Gradiente bege suave */
-            color: #8B4513; /* Marrom */
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        header {
-            background: linear-gradient(90deg, #228B22 0%, #32CD32 100%); /* Gradiente verde */
-            color: #F5F5DC; /* Bege */
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-        nav h1 {
-            margin: 0;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        nav p {
-            font-size: 1.2em;
-            margin: 5px 0 0 0;
-            font-style: italic;
-        }
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-        .nav-links li a {
-            color: #F5F5DC;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .nav-links li a:hover, .nav-links li a:focus {
-            background-color: #8B4513; /* Marrom */
-            transform: scale(1.05);
-            outline: 2px solid #F5F5DC;
-        }
-        .cart-icon {
-            position: relative;
-            cursor: pointer;
-            font-size: 1.5em;
-        }
-        .cart-count {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background-color: #8B4513;
-            color: #F5F5DC;
-            border-radius: 50%;
-            padding: 5px 8px;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-        main {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        section {
-            margin-bottom: 60px;
-            padding: 20px;
-            background-color: rgba(245, 245, 220, 0.9); /* Bege semi-transparente */
-            border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            animation: fadeIn 1s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        section h2 {
-            color: #228B22; /* Verde */
-            border-bottom: 3px solid #8B4513; /* Marrom */
-            padding-bottom: 10px;
-            font-size: 2.2em;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .slider {
-            display: flex;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-            height: 300px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .slider img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: slide 10s infinite;
-        }
-        @keyframes slide {
-            0% { transform: translateX(0); }
-            33% { transform: translateX(-100%); }
-            66% { transform: translateX(-200%); }
-            100% { transform: translateX(0); }
-        }
-        .produtos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        .produto {
-            background-color: #F5F5DC; /* Bege */
-            border: 2px solid #8B4513; /* Marrom */
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .produto::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(34, 139, 34, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        .produto:hover::before {
-            left: 100%;
-        }
-        .produto:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        .produto img {
-            max-width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            transition: transform 0.3s ease;
-        }
-        .produto:hover img {
-            transform: scale(1.05);
-        }
-        .produto h3 {
-            color: #228B22; /* Verde */
-            margin: 10px 0;
-            font-size: 1.4em;
-        }
-        .produto p {
-            margin: 10px 0;
-            font-size: 1em;
-        }
-        .preco {
-            font-weight: bold;
-            color: #8B4513; /* Marrom */
-            font-size: 1.3em;
-            margin: 15px 0;
-        }
-        button {
-            background: linear-gradient(45deg, #228B22, #32CD32); /* Gradiente verde */
-            color: #F5F5DC; /* Bege */
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: background 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        button:hover, button:focus {
-            background: linear-gradient(45deg, #8B4513, #A0522D); /* Gradiente marrom */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            outline: 2px solid #F5F5DC;
-        }
-        .quantidade {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px 0;
-        }
-        .quantidade button {
-            padding: 5px 10px;
-            margin: 0 5px;
-        }
-        .quantidade span {
-            font-weight: bold;
-            margin: 0 10px;
-        }
-        .sorvete-select {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        select {
-            padding: 12px;
-            border: 2px solid #8B4513; /* Marrom */
-            border-radius: 8px;
-            background-color: #F5F5DC; /* Bege */
-            color: #8B4513; /* Marrom */
-            font-size: 1em;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-        select:focus {
-            outline: none;
-            border-color: #228B22; /* Verde */
-        }
-        .promocao {
-            background-color: #228B22;
-            color: #F5F5DC;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .promocao h3 {
-            margin: 0 0 10px 0;
-        }
-        .contagem-regressiva {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        #carrinho {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 350px;
-            height: 100%;
-            background-color: #F5F5DC; /* Bege */
-            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-            padding: 20px;
-            overflow-y: auto;
-            z-index: 200;
-            animation: slideIn 0.5s ease;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-        #carrinho h3 {
-            color: #228B22;
-            margin-bottom: 20px;
-        }
-        .carrinho-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: rgba(139, 69, 19, 0.1); /* Marrom claro */
-            border-radius: 5px;
-        }
-        .carrinho-item button {
-            background-color: #8B4513;
-            color: #F5F5DC;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .total {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-top: 20px;
-            text-align: center;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 150;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #F5F5DC;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 300;
-            max-width: 500px;
-            width: 90%;
-        }
-        .modal h3 {
-            color: #228B22;
-            margin-top: 0;
-        }
-        .modal img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .modal .close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-size: 1.5em;
-        }
-        .contato form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .contato input, .contato textarea {
-            padding: 10px;
-            border: 1px solid #8B4513;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-        .contato button {
-            align-self: flex-start;
-        }
-        footer {
-            background: linear-gradient(90deg, #8B4513 0%, #A0522D 100%); /* Gradiente marrom */
-            color: #F5F5DC; /* Bege */
-            text-align: center;
-            padding: 30px 20px;
-            margin-top: 40px;
-        }
-        footer .social-links {
-            margin-top: 20px;
-        }
-        footer .social-links a {
-            color: #F5F5DC;
-            margin: 0 15px;
-            font-size: 1.5em;
-            transition: color 0.3s ease;
-        }
-        footer .social-links a:hover {
-            color: #228B22;
-        }
-        /* Responsividade aprimorada */
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-                text-align: center;
-            }
-            .nav-links {
-                margin-top: 10px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .produtos {
-                grid-template-columns: 1fr;
-            }
-            #carrinho {
-                width: 100%;
-            }
-            section h2 {
-                font-size: 1.8em;
-            }
-            .slider {
-                height: 200px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <div>
-                <h1>The Garage</h1>
-                <p>Onde os sabores são criados na garagem</p>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#agua-de-coco">Água de Coco</a></li>
-                <li><a href="#sorvetes">Sorvetes</a></li>
-                <li><a href="#sobre">Sobre Nós</a></li>
-                <li><a href="#contato">Contato</a></li>
-            </ul>
-            <div class="cart-icon" onclick="atualizarIconeCarrinho();" aria-label="Abrir carrinho de compras">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count" id="cart-count">0</span>
-            </div>
-        </nav>
-    </header>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>The Garage — Catálogo Moderno e Completo</title>
 
-    <main>
-        <section id="home">
-            <h2>Bem-vindo ao The Garage</h2>
-            <div class="slider">
-                <img src="https://via.placeholder.com/1200x300?text=Sabores+Frescos+do+Vale+do+Silício" alt="Slider 1">
-                <img src="https://via.placeholder.com/1200x300?text=Inovação+na+Garagem" alt="Slider 2">
-                <img src="https://via.placeholder.com/1200x300?text=Produtos+Artesanais" alt="Slider 3">
-            </div>
-            <div class="promocao">
-                <h3>Promoção do Dia: 20% OFF em Sorvetes!</h3>
-                <p class="contagem-regressiva">Tempo restante: <span id="countdown">00:00:00</span></p>
-            </div>
-            <p>Inovação e frescor direto do Vale do Silício. Descubra nossos produtos feitos com paixão na garagem!</p>
-        </section>
+            <!-- Fontes e ícones -->
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+            <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 
-        <section id="agua-de-coco">
-            <h2>Água de Coco</h2>
-            <div class="produtos">
-                <div class="produto">
-                    <img src="https://via.placeholder.com/300x200?text=Água+de+Coco+Natural" alt="Água de Coco Natural">
-                    <h3>Água de Coco Natural</h3>
-                    <p>Refrescante e pura, direto da garagem.</p>
-                    <p class="preco">R$ 5,00</p>
-                    <div class="quantidade">
-                        <button onclick="alterarQuantidade(event, 'Água de Coco Natural', -1)">-</button>
-                        <span id="qtd-Água de Coco Natural">1</span>
-                        <button onclick="alterarQuantidade(event, 'Água de Coco Natural', 1)">+</button>
+            <style>
+                /* ===========================
+                     Variáveis e reset moderno
+                     =========================== */
+                :root{
+                    --bg-1:#F5F5DC;
+                    --bg-2:#E8E8D0;
+                    --primary:#1a6b1a;
+                    --primary-2:#2d9a2d;
+                    --muted:#8B4513;
+                    --glass: rgba(255,255,255,0.6);
+                    --card: #fff;
+                    --card-selected: #eef7ef;
+                    --text-on-green:#000000;
+                    --radius:14px;
+                    --space:20px;
+                    --shadow-soft: 0 8px 24px rgba(0,0,0,0.08);
+                    --transition: 240ms cubic-bezier(.2,.9,.3,1);
+                }
+                *{box-sizing:border-box;margin:0;padding:0}
+                html,body{height:100%}
+                body{
+                    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+                    background: linear-gradient(135deg,var(--bg-1),var(--bg-2));
+                    color: var(--muted);
+                    -webkit-font-smoothing:antialiased;
+                    -moz-osx-font-smoothing:grayscale;
+                    line-height:1.5;
+                    min-height:100vh;
+                    display:flex;
+                    flex-direction:column;
+                    transition: background var(--transition), color var(--transition);
+                }
+
+                /* Dark mode */
+                @media (prefers-color-scheme:dark){
+                    :root{
+                        --bg-1:#071218;
+                        --bg-2:#0b1b12;
+                        --primary:#4a8f4a;
+                        --primary-2:#6bb06b;
+                        --card-selected: #0f2a12;
+                        --muted:#cfc6b8;
+                        --card:#0f1720;
+                    }
+                }
+                body.dark{
+                    background: linear-gradient(135deg,#071218,#0b1b12);
+                    color: var(--muted);
+                }
+
+                /* Accessibility: reduce motion */
+                @media (prefers-reduced-motion:reduce){
+                    :root{ --transition: 0ms; }
+                    * { animation: none !important; transition: none !important; }
+                }
+
+                /* ===========================
+                     Layout principal
+                     =========================== */
+                header{
+                    position:sticky; top:0; z-index:60;
+                    background: linear-gradient(90deg,var(--primary),var(--primary-2));
+                    color: var(--text-on-green);
+                    padding: calc(var(--space)/1.2) var(--space);
+                    box-shadow: var(--shadow-soft);
+                    backdrop-filter: blur(6px);
+                }
+                .nav{
+                    max-width:1200px; margin:0 auto;
+                    display:flex; gap:16px; align-items:center; justify-content:space-between;
+                }
+                .brand{
+                    display:flex; gap:12px; align-items:center;
+                }
+                .brand h1{font-size:1.25rem; letter-spacing:-0.02em}
+                .brand p{font-size:.85rem; opacity:.95; margin-top:2px}
+
+                nav ul{
+                    display:flex; gap:10px; list-style:none; align-items:center;
+                }
+                nav a{
+                    color: var(--text-on-green); text-decoration:none; padding:8px 12px; border-radius:10px; font-weight:600;
+                    transition:background var(--transition), transform var(--transition);
+                }
+                nav a:focus-visible{ outline:3px solid rgba(255,255,255,0.14); outline-offset:3px }
+                nav a:hover{ background: rgba(255,255,255,0.08); transform:translateY(-2px) }
+
+                .controls{ display:flex; gap:12px; align-items:center }
+                .icon-btn{
+                    background: transparent; border:0; color:inherit; cursor:pointer; padding:8px; border-radius:10px;
+                    display:inline-flex; align-items:center; justify-content:center;
+                }
+                .icon-btn:focus-visible{ outline:3px solid rgba(255,255,255,0.12); outline-offset:3px }
+                .cart-bubble{
+                    position:relative; font-weight:700;
+                }
+                .cart-count{
+                    position:absolute; top:-8px; right:-8px; background: linear-gradient(45deg,var(--muted),#A0522D);
+                    color: #fff; border-radius:999px; padding:6px 8px; font-size:.75rem; box-shadow:0 6px 16px rgba(0,0,0,0.12);
+                }
+
+                /* Mobile menu */
+                .burger{ display:none }
+                @media (max-width:900px){
+                    nav ul{ display:none }
+                    .burger{ display:inline-flex }
+                }
+
+                /* ===========================
+                     Conteúdo
+                     =========================== */
+                main{ max-width:1200px; margin:24px auto; padding:0 var(--space); width:100%; flex:1; display:grid; gap:24px }
+                .hero{
+                    background: linear-gradient(180deg,var(--card), rgba(245,245,220,0.85));
+                    border-radius: var(--radius); overflow:hidden; box-shadow:var(--shadow-soft); position:relative;
+                    padding: var(--space);
+                }
+                .hero-grid{ display:grid; grid-template-columns: 1fr 420px; gap:20px; align-items:center }
+                @media(max-width:900px){ .hero-grid{ grid-template-columns:1fr } }
+
+                /* Slider moderno */
+                .slider{
+                    position:relative; overflow:hidden; border-radius:12px; height:320px; background:#111;
+                }
+                .slides{ display:flex; height:100%; width:300%; transition:transform 700ms ease; will-change:transform }
+                .slide{ min-width:100%; height:100%; display:flex; align-items:center; justify-content:center; position:relative }
+                .slide img{ width:100%; height:100%; object-fit:cover; display:block; filter:brightness(.95) }
+                .slider-controls{ position:absolute; inset:auto 12px 12px 12px; display:flex; justify-content:space-between; align-items:center; pointer-events:none }
+                .indicators{ position:absolute; bottom:12px; left:50%; transform:translateX(-50%); display:flex; gap:8px; }
+                .indicators button{ width:12px; height:12px; border-radius:50%; border:0; background:rgba(255,255,255,0.6); cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.12); pointer-events:auto }
+                .indicators button[aria-pressed="true"]{ background:var(--primary-2); transform:scale(1.05) }
+
+                .promo{
+                    background: linear-gradient(135deg,var(--primary),var(--primary-2));
+                    color:var(--text-on-green); padding:14px; border-radius:12px; text-align:center;
+                    display:flex; gap:12px; align-items:center; justify-content:center; flex-direction:column;
+                    font-weight: 600;
+                }
+                .promo .count{ font-family:monospace; font-weight:800; font-size:1.1rem; color:var(--text-on-green); text-shadow: 0 2px 4px rgba(0,0,0,0.1) }
+
+                /* Produtos grid */
+                .produtos{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:18px }
+                .card{
+                    background:var(--card); border-radius:12px; padding:14px; box-shadow:var(--shadow-soft);
+                    border:1px solid rgba(0,0,0,0.04); transition: transform var(--transition), box-shadow var(--transition);
+                    display:flex; flex-direction:column; gap:10px;
+                }
+                .card:focus-within, .card:hover{ transform:translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.12) }
+                .card img{ width:100%; height:160px; object-fit:cover; border-radius:8px }
+                .card h3{ color:var(--primary); font-size:1.05rem; font-weight:700; letter-spacing:-0.01em }
+                .price{ font-weight:800; color:var(--primary); font-size:1.05rem; text-shadow: 0 1px 2px rgba(0,0,0,0.05) }
+                .card.in-cart{
+                    background: var(--card-selected);
+                    border:1px solid rgba(0,0,0,0.06);
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+                    position:relative;
+                    overflow:visible;
+                    border-left: 4px solid var(--primary);
+                }
+                .card.in-cart .add-btn{ background: linear-gradient(45deg,var(--primary),var(--primary-2)); color: #ffffff }
+                .card.in-cart h3{ color:var(--primary) }
+                .qty{ display:flex; gap:8px; align-items:center; justify-content:center }
+                .qty button{ width:40px; height:40px; border-radius:10px; border:0; background:linear-gradient(45deg,var(--primary),var(--primary-2)); color:var(--text-on-green); cursor:pointer; font-weight:700; transition: all var(--transition) }
+                .qty button:hover{ transform: scale(1.05); box-shadow: 0 4px 12px rgba(34,139,34,0.3) }
+                .add-btn{ margin-top:auto; padding:10px 12px; border-radius:10px; border:0; cursor:pointer;
+                    background:linear-gradient(45deg,var(--primary),var(--primary-2)); color:var(--text-on-green); font-weight:700; transition: all var(--transition) }
+                .add-btn:hover{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(34,139,34,0.3) }
+                .add-btn:active{ transform:translateY(1px) }
+
+                /* Carrinho lateral */
+                #overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:80; transition:opacity var(--transition), backdrop-filter var(--transition); backdrop-filter:blur(0px) }
+                #overlay.open{ backdrop-filter:blur(4px) }
+                #cart{
+                    position:fixed; right:0; top:0; height:100vh; width:min(420px, 100%); 
+                    background: var(--card);
+                    box-shadow:-20px 0 60px rgba(0,0,0,0.15);
+                    padding:0; z-index:90; transform:translateX(100%); transition:transform 320ms cubic-bezier(.2,.9,.3,1);
+                    display:flex; flex-direction:column; gap:0;
+                    backdrop-filter: blur(10px);
+                }
+                #cart.open{ transform:translateX(0) }
+                .cart-header{ 
+                    display:flex; justify-content:space-between; align-items:center;
+                    padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.06);
+                    background: linear-gradient(135deg, rgba(34, 139, 34, 0.02), rgba(50, 205, 50, 0.02));
+                }
+                .cart-header h3{
+                    margin:0; color:var(--primary); font-size:1.3rem; font-weight:800; letter-spacing:-0.01em;
+                }
+                .cart-header .icon-btn{
+                    transition: background var(--transition), transform var(--transition);
+                }
+                .cart-header .icon-btn:hover{ background: rgba(0,0,0,0.05); transform: rotate(90deg); }
+                .cart-items{ 
+                    overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px; 
+                    padding: 16px; scroll-behavior: smooth;
+                }
+                .cart-items::-webkit-scrollbar{ width:6px }
+                .cart-items::-webkit-scrollbar-track{ background: transparent }
+                .cart-items::-webkit-scrollbar-thumb{ background: rgba(139,69,19,0.2); border-radius:3px }
+                .cart-items::-webkit-scrollbar-thumb:hover{ background: rgba(139,69,19,0.4) }
+                .cart-row{ 
+                    display:flex; gap:12px; align-items:flex-start; justify-content:space-between; 
+                    background: var(--card-selected);
+                    padding: 14px; border-radius: 12px;
+                    border: 1px solid rgba(34,139,34,0.08);
+                    transition: all var(--transition);
+                    animation: slideIn 300ms ease;
+                }
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateX(20px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                .cart-row:hover{ 
+                    background: #ffffff;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+                    border-color: rgba(34,139,34,0.18);
+                }
+                .cart-row .meta{ display:flex; gap:12px; align-items:flex-start; flex:1; }
+                .cart-row img{ 
+                    width:70px; height:60px; object-fit:cover; border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+                    border: 1px solid rgba(0,0,0,0.04);
+                }
+                .cart-row .meta > div{ display:flex; flex-direction:column; gap:4px; flex:1; }
+                .cart-row .meta div:first-of-type{ font-weight:800; color:var(--primary); font-size:0.95rem; text-shadow: 0 1px 2px rgba(0,0,0,0.05) }
+                .cart-row .meta div:last-of-type{ font-size:0.85rem; color:var(--muted); font-weight:600 }
+                .cart-row > div:last-child{
+                    display:flex; flex-direction:column; gap:8px; align-items:flex-end;
+                }
+                .cart-row .price{ font-weight:800; color:var(--primary); font-size:1rem; }
+                .cart-row .controls{
+                    display:flex; gap:6px;
+                }
+                .cart-row .icon-btn{
+                    width:36px; height:36px; background:linear-gradient(45deg,var(--primary),var(--primary-2));
+                    color:#ffffff; border-radius:8px; font-size:0.85rem; font-weight:600;
+                    transition: all var(--transition);
+                }
+                .cart-row .icon-btn:hover{
+                    transform: scale(1.1);
+                    box-shadow: 0 4px 12px rgba(34,139,34,0.3);
+                }
+                .cart-total{ 
+                    font-weight:800; text-align:center; padding: 16px 20px; 
+                    border-radius:0; background: linear-gradient(135deg, var(--primary), var(--primary-2)); 
+                    color: var(--text-on-green);
+                    font-size: 1.2rem;
+                    border-top: 1px solid rgba(0,0,0,0.06);
+                    letter-spacing: -0.01em;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+                }
+                #qrcode-container{
+                    padding: 16px 20px;
+                    text-align: center;
+                    background: linear-gradient(135deg, rgba(34,139,34,0.12), rgba(50,205,50,0.12));
+                    border-top: 2px solid var(--primary);
+                    border-bottom: 2px solid var(--primary);
+                    animation: fadeIn 400ms ease;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                #qrcode-container canvas{
+                    border-radius: 12px;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+                    border: 2px solid var(--primary);
+                    padding: 12px;
+                    background: white;
+                }
+                #qrcode-container p{
+                    margin: 12px 0 0 0;
+                    font-size: 0.85rem;
+                    color: var(--muted);
+                    font-weight: 700;
+                }
+                #qrcode-container strong{
+                    color: var(--primary);
+                    font-weight: 700;
+                }
+                .cart-footer{
+                    display:flex; gap:8px; justify-content:space-between;
+                    padding: 16px 20px;
+                    border-top: 2px solid var(--primary);
+                    background: linear-gradient(135deg, rgba(34,139,34,0.08), rgba(50,205,50,0.08));
+                }
+                .cart-footer button{
+                    flex:1; padding: 12px 16px; border-radius: 10px; border:0; cursor:pointer;
+                    font-weight: 700; transition: all var(--transition);
+                }
+                .cart-footer .add-btn{
+                    background: linear-gradient(45deg,var(--primary),var(--primary-2));
+                    color: #ffffff;
+                    font-weight: 700;
+                }
+                .cart-footer .add-btn:hover{
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 16px rgba(34,139,34,0.3);
+                }
+                .cart-footer #clear-cart{
+                    background: transparent;
+                    color: var(--muted);
+                    border: 2px solid var(--muted);
+                    font-weight: 700;
+                }
+                .cart-footer #clear-cart:hover{
+                    background: rgba(139,69,19,0.1);
+                    border-color: var(--muted);
+                }
+
+                /* Modal produto */
+                .modal{ display:none; position:fixed; inset:0; align-items:center; justify-content:center; z-index:120 }
+                .modal .panel{ background:var(--card); padding:18px; border-radius:12px; width:min(720px,96%); box-shadow:var(--shadow-soft) }
+                .modal.open{ display:flex; }
+
+                footer{
+                    margin-top:24px; padding:20px; text-align:center; background:linear-gradient(90deg,#8B4513,#A0522D); color:#F5F5DC; border-top-left-radius:16px; border-top-right-radius:16px
+                }
+
+                /* utilities */
+                .sr-only{ position:absolute!important; width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
+            </style>
+        </head>
+        <body>
+            <header>
+                <div class="nav" role="navigation" aria-label="Navegação principal">
+                    <div class="brand" aria-hidden="false">
+                        <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(45deg,var(--primary),var(--primary-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">TG</div>
+                        <div>
+                            <h1>The Garage</h1>
+                            <p style="font-size:.8rem;margin-top:4px">Sabores artesanais e inovação</p>
+                        </div>
                     </div>
-                    <button onclick="adicionarAoCarrinho('Água de Coco Natural', 5.00)">Adicionar ao Carrinho</button>
+
+                    <nav>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#agua-de-coco">Água de Coco</a></li>
+                            <li><a href="#sorvetes">Sorvetes</a></li>
+                            <li><a href="#sobre">Sobre</a></li>
+                            <li><a href="#contato">Contato</a></li>
+                        </ul>
+                    </nav>
+
+                    <div class="controls">
+                        <button class="icon-btn" id="theme-toggle" aria-label="Alternar tema (claro/escuro)" title="Alternar tema">
+                            <i class="fa-regular fa-moon"></i>
+                        </button>
+
+                        <button class="icon-btn cart-bubble" id="open-cart" aria-label="Abrir carrinho" title="Carrinho">
+                            <i class="fa-solid fa-cart-shopping" style="font-size:1.15rem"></i>
+                            <span id="cart-count" class="cart-count" aria-live="polite">0</span>
+                        </button>
+
+                        <button class="icon-btn burger" id="burger" aria-label="Abrir menu">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="produto">
-                    <img src="https://via.placeholder.com/300x200?text=Água+de+Coco+com+Limão" alt="Água de Coco com Limão">
-                    <h3>Água de Coco com Limão</h3>
-                    <p>Uma twist cítrica para o seu dia.</p>
-                    <p class="preco">R$ 6,00</p>
-                    <div class="quantidade">
-                        <button onclick="alterarQuantidade(event, 'Água de Coco com Limão', -1)">-</button>
-                        <span id="qtd-Água de Coco com Limão">1</span>
-                        <button onclick="alterarQuantidade(event, 'Água de Coco com Limão', 1)">+</button>
+            </header>
+
+            <main id="home">
+                <section class="hero" aria-labelledby="hero-title">
+                    <div class="hero-grid">
+                        <div>
+                            <h2 id="hero-title" style="margin-bottom:12px;color:var(--primary)">Bem-vindo ao The Garage</h2>
+                            <p style="margin-bottom:12px">Pequena fábrica de sabores: água de coco, sorvetes artesanais e criações sazonais. Abaixo você encontra próximos lançamentos, promoções e o catálogo completo — tudo acessível e responsivo.</p>
+
+                            <div style="display:flex;gap:12px;flex-wrap:wrap">
+                                <div class="promo" aria-live="polite" aria-atomic="true">
+                                    <div style="font-weight:800">Promoção do Dia</div>
+                                    <div class="count" id="countdown" aria-label="Tempo restante para promoção">00:00:00</div>
+                                    <small style="opacity:.9">20% OFF em sorvetes selecionados</small>
+                                </div>
+
+                                <div style="background:linear-gradient(180deg,var(--card),rgba(245,245,220,0.85));padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px;min-width:220px;">
+                                    <strong>Selecione sabor</strong>
+                                    <select id="sabor-sorvete" aria-label="Selecionar sabor do sorvete" style="padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);background:#fff;color:var(--muted);font-weight:600;cursor:pointer">
+                                        <option value="chocolate">Chocolate</option>
+                                        <option value="baunilha">Baunilha</option>
+                                        <option value="morango">Morango</option>
+                                        <option value="manga">Manga</option>
+                                        <option value="pistache">Pistache</option>
+                                    </select>
+                                    <button class="add-btn" id="preview-sabor" aria-controls="modal">Ver sabor selecionado</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <aside>
+                            <div class="slider" id="slider" aria-roledescription="carousel" aria-label="Destaques">
+                                <div class="slides" id="slides">
+                                    <div class="slide" role="group" aria-roledescription="slide" aria-label="Sabores frescos">
+                                        <img src="https://via.placeholder.com/1200x600?text=Sabores+Frescos" alt="Sabores frescos do The Garage">
+                                    </div>
+                                    <div class="slide" role="group" aria-roledescription="slide" aria-label="Inovação na garagem">
+                                        <img src="https://via.placeholder.com/1200x600?text=Inovação+na+Garagem" alt="Inovação na garagem">
+                                    </div>
+                                    <div class="slide" role="group" aria-roledescription="slide" aria-label="Produtos artesanais">
+                                        <img src="https://via.placeholder.com/1200x600?text=Produtos+Artesanais" alt="Produtos artesanais">
+                                    </div>
+                                </div>
+                                <div class="indicators" id="indicators" role="tablist" aria-label="Indicadores do carrossel"></div>
+                            </div>
+                        </aside>
                     </div>
-                    <button onclick="adicionarAoCarrinho('Água de Coco com Limão', 6.00)">Adicionar ao Carrinho</button>
+                </section>
+
+                <section id="agua-de-coco" aria-labelledby="agua-title">
+                    <h2 id="agua-title">Água de Coco</h2>
+                    <div class="produtos" id="catalogo">
+                        <!-- Cards serão populados via JS para evitar ids com espaços -->
+                    </div>
+                </section>
+
+                <section id="sorvetes" aria-labelledby="sorvetes-title">
+                    <h2 id="sorvetes-title">Sorvetes</h2>
+                    <div class="produtos" id="catalogo-sorvetes">
+                        <!-- Cards sorvetes -->
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Overlay e carrinho -->
+            <div id="overlay" aria-hidden="true"></div>
+            <aside id="cart" aria-label="Carrinho de compras" aria-hidden="true">
+                <div class="cart-header">
+                    <h3>Seu Carrinho</h3>
+                    <div>
+                        <button class="icon-btn" id="close-cart" aria-label="Fechar carrinho"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
                 </div>
-            </div>
-        </section>
-        <section id="sorvetes">
-            <h2>Sorvetes</h2>
-            <div class="sorvete-select">
-                <label for="sabor-sorvete">Escolha seu sabor favorito:</label>
-                <select id="sabor-sorvete" aria-label="Seleção de sabor de sorvete">
-                    <option value="chocolate">Chocolate</option>
-                    <option value="baunilha">Baunilha</option>
-                    <option value="morango">Morango</option>
-                    <option value="manga">Manga</option>
-                    <option value="pistache">Pistache</option>
-                </select>
-            </div>
-            <div class="produtos">
-                <div class="produto">
-                    <img src="https://via.placeholder.com/300x200?text=Sorvete+de+Chocolate" alt="Sorvete de Chocolate">
-                    <h3>Sorvete de Chocolate</h3>
-                    <p>Delicioso sorvete de chocolate feito com cacau premium.</p>
-                    <p class="preco">R$ 8,00</p>
-                    <div class="quantidade">
-                        <button onclick="alterarQuantidade(event, 'Sorvete de Chocolate', -1)">-</button>
-                        <span id="qtd-Sorvete de Chocolate">1</span>
-                        <button onclick="alterarQuantidade(event, 'Sorvete de Chocolate', 1)">+</button>
-                    </div>
-                    <button onclick="adicionarAoCarrinho('Sorvete de Chocolate', 8.00)">Adicionar ao Carrinho</button>
+                <div class="cart-items" id="cart-items" role="list"></div>
+                <div class="cart-total" id="cart-total" aria-live="polite">Total: R$ 0,00</div>
+                <div id="qrcode-section"></div>
+                <div class="cart-footer">
+                    <button class="add-btn" id="checkout">Finalizar compra</button>
+                    <button class="icon-btn" id="clear-cart" aria-label="Limpar carrinho" title="Limpar carrinho">Limpar</button>
                 </div>
-                <div class="produto">
-                    <img src="https://via.placeholder.com/300x200?text=Sorvete+de+Baunilha" alt="Sorvete de Baunilha">
-                    <h3>Sorvete de Baunilha</h3>
-                    <p>Clássico sorvete de baunilha com um toque artesanal.</p>
-                    <p class="preco">R$ 7,50</p>
-                    <div class="quantidade">
-                        <button onclick="alterarQuantidade(event, 'Sorvete de Baunilha', -1)">-</button>
-                        <span id="qtd-Sorvete de Baunilha">1</span>
-                        <button onclick="alterarQuantidade(event, 'Sorvete de Baunilha', 1)">+</button>
-                    </div>
-                    <button onclick="adicionarAoCarrinho('Sorvete de Baunilha', 7.50)">Adicionar ao Carrinho</button>
+            </aside>
+
+            <!-- Modal simples -->
+            <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title">
+                <div class="panel" role="document">
+                    <button class="icon-btn" id="modal-close" aria-label="Fechar modal" style="float:right"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 id="modal-title">Detalhes</h3>
+                    <div id="modal-body" style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px"></div>
                 </div>
             </div>
-        </section>
-        </main>
-        <footer>
-        <p>&copy; 2024 The Garage. Todos os direitos reservados.</p>
-        <div class="social-links">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        </div>
-    </footer>
-    <script src="main.js"></script>
-</body>
-</html>
 
+            <footer>
+                <div>&copy; 2025 The Garage — Todos os direitos reservados.</div>
+                <div style="margin-top:8px">
+                    <a href="#" style="color:inherit;margin:0 8px" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" style="color:inherit;margin:0 8px" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                </div>
+            </footer>
 
+            <script src="main.js"></script>
+
+            <script>
+                /* ===========================
+                     Dados de produtos (exemplo)
+                     =========================== */
+                const produtos = [
+                    { id: 'agua_natural', nome: 'Água de Coco Natural', preco: 5.00, img: 'mao-desenhado-coco-ilustracao_23-2148160083.avif', categoria: 'agua' },
+                    { id: 'agua_limao', nome: 'Água de Coco com Limão', preco: 6.00, img: 'mao-desenhado-coco-ilustracao_23-2148160083.avif', categoria: 'agua' },
+                    { id: 'sorvete_chocolate', nome: 'Sorvete de Chocolate', preco: 8.00, img: 'images.jpg', categoria: 'sorvete' },
+                    { id: 'sorvete_baunilha', nome: 'Sorvete de Baunilha', preco: 7.50, img: 'images.jpg', categoria: 'sorvete' },
+                    { id: 'sorvete_morango', nome: 'Sorvete de Morango', preco: 8.50, img: 'images.jpg', categoria: 'sorvete' }
+                ];
+
+                /* ===========================
+                     Utilitários
+                     =========================== */
+                const money = v => v.toLocaleString('pt-BR',{ style:'currency', currency:'BRL' });
+                const $ = sel => document.querySelector(sel);
+                const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+                /* ===========================
+                     Popula catálogos dinamicamente
+                     =========================== */
+                function montarCard(p){
+                    const el = document.createElement('article');
+                    el.className = 'card';
+                    el.dataset.id = p.id;
+                    el.tabIndex = 0;
+                    el.innerHTML = `
+                        <img src="${p.img}" alt="${p.nome}">
+                        <h3>${p.nome}</h3>
+                        <div style="font-size:.95rem;color:var(--muted);font-weight:600">${p.categoria === 'agua' ? 'Refrescante e natural' : 'Feito artesanalmente'}</div>
+                        <div class="price">${money(p.preco)}</div>
+                        <div class="qty" aria-label="Quantidade do produto">
+                            <button aria-label="Diminuir quantidade" data-action="minus" data-id="${p.id}">-</button>
+                            <span id="qtd-${p.id}" data-qty="1" style="min-width:30px;text-align:center;font-weight:700">1</span>
+                            <button aria-label="Aumentar quantidade" data-action="plus" data-id="${p.id}">+</button>
+                        </div>
+                        <button class="add-btn" data-add="${p.id}" aria-label="Adicionar ${p.nome} ao carrinho">Adicionar ao Carrinho</button>
+                    `;
+                    // abrir modal ao clicar no nome/imagem (acessível)
+                    el.querySelector('img').addEventListener('click', ()=> openModal(p));
+                    el.querySelector('h3').addEventListener('click', ()=> openModal(p));
+                    return el;
+                }
+
+                function popular(){
+                    const agua = $('#catalogo');
+                    const sorvetes = $('#catalogo-sorvetes');
+                    produtos.forEach(p=>{
+                        const card = montarCard(p);
+                        if(p.categoria === 'agua') agua.appendChild(card); else sorvetes.appendChild(card);
+                    });
+                }
+
+                /* ===========================
+                     Quantidade e adicionar ao carrinho
+                     =========================== */
+                function alterarQuantidade(id, delta){
+                    const span = document.getElementById('qtd-'+id);
+                    if(!span) return;
+                    const current = Number(span.dataset.qty || '1');
+                    const next = Math.max(1, current + delta);
+                    span.dataset.qty = String(next);
+                    span.textContent = String(next);
+                }
+
+                function obterQtd(id){
+                    const span = document.getElementById('qtd-'+id);
+                    return span ? Number(span.dataset.qty || '1') : 1;
+                }
+
+                /* ===========================
+                     Carrinho (persistência local)
+                     =========================== */
+                const STORAGE_KEY = 'tg_cart_v1';
+                let cart = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+                function saveCart(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
+
+                function adicionarAoCarrinho(id, preco, nome, img){
+                    const qtd = obterQtd(id);
+                    if(!cart[id]) cart[id] = { id, nome, preco, img, qty:0 };
+                    cart[id].qty += qtd;
+                    saveCart();
+                    atualizarCarrinhoUI();
+                    abrirCarrinho();
+                }
+
+                function removerDoCarrinho(id){
+                    delete cart[id];
+                    saveCart();
+                    atualizarCarrinhoUI();
+                }
+
+                function atualizarQtdeNoCarrinho(id, qtd){
+                    if(cart[id]){
+                        cart[id].qty = Math.max(0, qtd);
+                        if(cart[id].qty === 0) removerDoCarrinho(id);
+                        saveCart();
+                        atualizarCarrinhoUI();
+                    }
+                }
+
+                function totalCarrinho(){
+                    return Object.values(cart).reduce((s,i)=> s + i.preco * i.qty, 0);
+                }
+
+                function atualizarCarrinhoUI(){
+                    const items = $('#cart-items');
+                    items.innerHTML = '';
+                    const vals = Object.values(cart);
+                    
+                    if(vals.length === 0){
+                        items.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--muted)"><i class="fa-solid fa-shopping-cart" style="font-size:2.5rem;margin-bottom:12px;display:block;color:var(--primary)"></i><p style="font-weight:700">Seu carrinho está vazio</p></div>';
+                        $('#qrcode-section').innerHTML = '';
+                    } else {
+                        vals.forEach(i=>{
+                            const row = document.createElement('div');
+                            row.className = 'cart-row';
+                            row.innerHTML = `
+                                <div class="meta">
+                                    <img src="${i.img}" alt="${i.nome}">
+                                    <div>
+                                        <div>${i.nome}</div>
+                                        <div>${money(i.preco)} × ${i.qty}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="price">${money(i.preco * i.qty)}</div>
+                                    <div class="controls">
+                                        <button class="icon-btn" data-dec="${i.id}" aria-label="Diminuir ${i.nome}"><i class="fa-solid fa-minus"></i></button>
+                                        <button class="icon-btn" data-inc="${i.id}" aria-label="Aumentar ${i.nome}"><i class="fa-solid fa-plus"></i></button>
+                                        <button class="icon-btn" data-rm="${i.id}" aria-label="Remover ${i.nome}"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            `;
+                            items.appendChild(row);
+                        });
+                        gerarQRCodeCarrinho();
+                    }
+                    
+                    $('#cart-total').textContent = 'Total: ' + money(totalCarrinho());
+                    $('#cart-count').textContent = vals.reduce((s,i)=> s + i.qty, 0);
+                    $('#cart-count').setAttribute('aria-live','polite');
+                    // marcar/desmarcar cards na página conforme conteúdo do carrinho
+                    $$('.card').forEach(card => {
+                        const id = card.dataset.id;
+                        if(id && cart[id]) card.classList.add('in-cart'); else card.classList.remove('in-cart');
+                    });
+                }
+                
+                // Função para gerar QR Code Pix (lê biblioteca qrcodejs automaticamente)
+                function gerarQRCodeCarrinho(){
+                    const qrcodeSection = $('#qrcode-section');
+                    qrcodeSection.innerHTML = '';
+                    
+                    // Carregar biblioteca QRCode se necessário
+                    if(typeof QRCode === 'undefined'){
+                        const s = document.createElement('script');
+                        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+                        s.onload = ()=> { 
+                            renderQRCode();
+                        };
+                        document.head.appendChild(s);
+                    } else {
+                        renderQRCode();
+                    }
+                    
+                    function renderQRCode(){
+                        const qrcodeDiv = document.createElement('div');
+                        qrcodeDiv.id = 'qrcode-container';
+                        
+                        const chavePix = 'asafea49@gmail.com';
+                        const valor = totalCarrinho().toFixed(2);
+                        
+                        try {
+                            new QRCode(qrcodeDiv, {
+                                text: chavePix,
+                                width: 180,
+                                height: 180,
+                                colorDark: '#228B22',
+                                colorLight: '#fff',
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+                            
+                            const label = document.createElement('p');
+                            label.innerHTML = `<strong>Chave Pix:</strong> ${chavePix}<br><small>Total a pagar: ${money(totalCarrinho())}</small>`;
+                            
+                            qrcodeDiv.appendChild(label);
+                            qrcodeSection.appendChild(qrcodeDiv);
+                        } catch(e) {
+                            console.warn('Erro ao gerar QR code:', e);
+                        }
+                    }
+                }
+
+                function limparCarrinho(){
+                    cart = {};
+                    saveCart();
+                    atualizarCarrinhoUI();
+                }
+
+                /* ===========================
+                     Ações globais: carrinho (inc/dec/rm)
+                     =========================== */
+                document.addEventListener('click', (e)=>{
+                    const target = e.target;
+
+                    // carrinho: inc/dec/rm
+                    if(target.matches('[data-dec]') || target.closest('[data-dec]')){
+                        const id = (target.closest('[data-dec]') || {}).dataset.dec;
+                        if(cart[id]) atualizarQtdeNoCarrinho(id, cart[id].qty - 1);
+                    }
+                    if(target.matches('[data-inc]') || target.closest('[data-inc]')){
+                        const id = (target.closest('[data-inc]') || {}).dataset.inc;
+                        if(cart[id]) atualizarQtdeNoCarrinho(id, cart[id].qty + 1);
+                    }
+                    if(target.matches('[data-rm]') || target.closest('[data-rm]')){
+                        const id = (target.closest('[data-rm]') || {}).dataset.rm;
+                        removerDoCarrinho(id);
+                    }
+                });
+
+                // botões do header
+                $('#open-cart').addEventListener('click', abrirCarrinho);
+                $('#close-cart').addEventListener('click', fecharCarrinho);
+                $('#overlay').addEventListener('click', fecharCarrinho);
+                $('#clear-cart').addEventListener('click', ()=>{
+                    if(confirm('Deseja esvaziar o carrinho?')) limparCarrinho();
+                });
+
+                function abrirCarrinho(){
+                    $('#overlay').style.display = 'block';
+                    $('#overlay').style.opacity = '1';
+                    $('#overlay').classList.add('open');
+                    $('#cart').classList.add('open');
+                    $('#cart').setAttribute('aria-hidden','false');
+                    $('#overlay').setAttribute('aria-hidden','false');
+                    atualizarCarrinhoUI();
+                }
+                function fecharCarrinho(){
+                    $('#overlay').style.opacity = '0';
+                    $('#overlay').classList.remove('open');
+                    setTimeout(()=> $('#overlay').style.display = 'none', 220);
+                    $('#cart').classList.remove('open');
+                    $('#cart').setAttribute('aria-hidden','true');
+                    $('#overlay').setAttribute('aria-hidden','true');
+                }
+
+                /* ===========================
+                     Modal produto
+                     =========================== */
+                function openModal(prod){
+                    const m = $('#modal');
+                    $('#modal-body').innerHTML = `
+                        <img src="${prod.img}" alt="${prod.nome}" style="width:100%;height:300px;object-fit:cover;border-radius:8px">
+                        <h4 style="color:var(--primary)">${prod.nome}</h4>
+                        <p style="margin-bottom:6px;color:var(--muted);font-weight:600">${prod.categoria === 'agua' ? 'Refrescante e natural.' : 'Feito com ingredientes selecionados.'}</p>
+                        <div style="font-weight:800">${money(prod.preco)}</div>
+                        <div style="display:flex;gap:8px;margin-top:10px">
+                            <button class="add-btn" id="modal-add">Adicionar</button>
+                            <button class="icon-btn" id="modal-close-2"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    `;
+                    m.classList.add('open');
+                    m.setAttribute('aria-hidden','false');
+                    // listeners do modal (delegados)
+                    $('#modal-body').querySelector('#modal-add').addEventListener('click', ()=>{
+                        adicionarAoCarrinho(prod.id, prod.preco, prod.nome, prod.img);
+                        closeModal();
+                    });
+                    $('#modal-body').querySelector('#modal-close-2').addEventListener('click', closeModal);
+                }
+                function closeModal(){ $('#modal').classList.remove('open'); $('#modal').setAttribute('aria-hidden','true'); }
+                $('#modal-close').addEventListener('click', closeModal);
+                $('#modal').addEventListener('click', e=> { if(e.target === $('#modal')) closeModal(); });
+
+                /* ===========================
+                     Slider/carrossel (simples, acessível)
+                     =========================== */
+                const slidesEl = $('#slides');
+                const totalSlides = slidesEl.children.length;
+                const indicators = $('#indicators');
+
+                let active = 0;
+                let autoplay = true;
+                let intervalId = null;
+
+                function buildIndicators(){
+                    for(let i=0;i<totalSlides;i++){
+                        const btn = document.createElement('button');
+                        btn.setAttribute('role','tab');
+                        btn.title = 'Ir para slide '+(i+1);
+                        btn.dataset.index = i;
+                        btn.addEventListener('click', ()=> goTo(i));
+                        indicators.appendChild(btn);
+                    }
+                    updateIndicators();
+                }
+                function updateIndicators(){
+                    Array.from(indicators.children).forEach((b,idx)=> b.setAttribute('aria-pressed', String(idx===active)));
+                    slidesEl.style.transform = `translateX(-${active*100}%)`;
+                }
+                function goTo(i){
+                    active = (i + totalSlides) % totalSlides;
+                    updateIndicators();
+                }
+                function startAuto(){
+                    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                    stopAuto();
+                    intervalId = setInterval(()=>{ active = (active+1)%totalSlides; updateIndicators(); }, 4500);
+                }
+                function stopAuto(){ if(intervalId) { clearInterval(intervalId); intervalId = null; } }
+
+                $('#slider').addEventListener('mouseenter', ()=> { stopAuto(); });
+                $('#slider').addEventListener('mouseleave', ()=> { if(autoplay) startAuto(); });
+
+                /* ===========================
+                     Promo countdown
+                     =========================== */
+                function startCountdown(endDate){
+                    const el = $('#countdown');
+                    function tick(){
+                        const now = new Date();
+                        const diff = Math.max(0, endDate - now);
+                        const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+                        const m = String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+                        const s = String(Math.floor(diff%60000/1000)).padStart(2,'0');
+                        el.textContent = `${h}:${m}:${s}`;
+                        if(diff<=0) clearInterval(timerId);
+                    }
+                    tick();
+                    const timerId = setInterval(tick, 1000);
+                }
+
+                /* ===========================
+                     Tema (dark toggle) e mobile menu
+                     =========================== */
+                const storedTheme = localStorage.getItem('tg_theme');
+                if(storedTheme === 'dark') document.body.classList.add('dark');
+                const themeBtn = $('#theme-toggle');
+                function updateThemeIcon(){
+                    themeBtn.innerHTML = document.body.classList.contains('dark') ? '<i class="fa-regular fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+                }
+                updateThemeIcon();
+                themeBtn.addEventListener('click', ()=>{
+                    document.body.classList.toggle('dark');
+                    localStorage.setItem('tg_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+                    updateThemeIcon();
+                });
+
+                // burger (mobile) toggles nav links
+                $('#burger').addEventListener('click', ()=>{
+                    const nav = document.querySelector('nav ul');
+                    if(nav.style.display === 'flex'){ nav.style.display = 'none'; } else { nav.style.display = 'flex'; nav.style.flexDirection = 'column'; nav.style.gap='8px' }
+                });
+
+                /* ===========================
+                     Inicialização
+                     =========================== */
+                document.addEventListener('DOMContentLoaded', ()=>{
+                    // popular cards
+                    popular();
+
+                    // delegação: plus/minus/add de cards agora que foram inseridos
+                    document.body.addEventListener('click', (e)=>{
+                        const plus = e.target.closest('[data-action="plus"]');
+                        const minus = e.target.closest('[data-action="minus"]');
+                        if(plus){ alterarQuantidade(plus.dataset.id, 1); }
+                        if(minus){ alterarQuantidade(minus.dataset.id, -1); }
+                    });
+
+                    // ligar botões add gerados dinamicamente
+                    document.body.addEventListener('click', (e)=>{
+                        const add = e.target.closest('[data-add]');
+                        if(add){
+                            const id = add.dataset.add;
+                            const p = produtos.find(x=>x.id===id);
+                            adicionarAoCarrinho(p.id, p.preco, p.nome, p.img);
+                        }
+                    });
+
+                    // montar indicadores do slider
+                    buildIndicators();
+                    if(autoplay) startAuto();
+
+                    // carregar carrinho salvo
+                    cart = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                    atualizarCarrinhoUI();
+
+                    // countdown até fim do dia (exemplo) às 23:59:59
+                    const now = new Date();
+                    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                    startCountdown(end);
+                });
+
+                // pequenos atalhos: checkout
+                $('#checkout').addEventListener('click', ()=>{
+                    if(Object.keys(cart).length === 0){ alert('Seu carrinho está vazio'); return; }
+                    alert('Checkout simulado — total: ' + money(totalCarrinho()));
+                    limparCarrinho();
+                    fecharCarrinho();
+                });
+
+                // Expor função global para facilitar debugging (opcional)
+                window.adicionarAoCarrinho = adicionarAoCarrinho;
+                window.alterarQuantidade = alterarQuantidade;
+            </script>
+        </body>
+        </html>

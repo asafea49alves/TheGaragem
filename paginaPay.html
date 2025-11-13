@@ -335,6 +335,41 @@
 
             totalSpan.textContent = total.toFixed(2);
         }
+        // Função para calcular CRC16 (implementação básica para Pix)
+        function calcularCRC16(data) {
+            const polynomial = 0x1021;
+            let crc = 0xFFFF;
+            for (let i = 0; i < data.length; i++) {
+                crc ^= (data.charCodeAt(i) << 8);
+                for (let j = 0; j < 8; j++) {
+                    if (crc & 0x8000) {
+                        crc = (crc << 1) ^ polynomial;
+                    } else {
+                        crc <<= 1;
+                    }
+                } 
+            }
+            crc &= 0xFFFF;
+            return crc.toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        // Função para gerar string Pix completa
+        function gerarStringPix(chavePix, valor, nome = 'Asafe da Fonseca Alves', cidade = 'RECIFE', referencia = '***') {
+        // Formatar valor com 2 casas decimais
+            const valorFormatado = parseFloat(valor).toFixed(2);
+
+            // Montar a string base (sem CRC)
+            const pixBase = `00020101021126360014BR.GOV.BCB.PIX0111${chavePix}5204000053039865404${valorFormatado}5802BR5913${nome}6009${cidade}62070503${referencia}`;
+
+            // Calcular CRC16
+            const crc = calcularCRC16(pixBase + '6304');
+
+            // Retornar string completa
+            return pixBase + '6304' + crc;
+        }
+
+        // Exemplo de uso
+        // Saída: 00020101021126360014BR.GOV.BCB.PIX0111asafea49@gmail.com520400005303986540410.005802BR5913The Garage6009SAO PAULO62070503***6304XXXX (onde XXXX é o CRC calculado)
 
         // Função para gerar QR Code Pix
         function gerarQRCodePix() {
@@ -344,11 +379,10 @@
 
             // Dados do Pix (simplificado; em produção, use uma API para gerar corretamente)
             const chavePix = 'asafea49@gmail.com';
-            const valor = total.toFixed(2);
-            const descricao = 'Compra The Garage';
+            const valor = total.toFixed(2); 
 
             // String Pix simplificada (formato básico; para produção, use biblioteca Pix completa)
-            const pixString = `00020101021126360014BR.GOV.BCB.PIX0111${chavePix}5204000053039865404${valor}5802BR5913The Garage6009SAO PAULO62070503***6304`; // Exemplo simplificado
+            const pixString = gerarStringPix(chavePix, valor);
 
             // Gerar QR Code
             const qrcode = new QRCode(qrcodeContainer, {
