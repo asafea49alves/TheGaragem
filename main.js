@@ -8,6 +8,7 @@ let total = 0;
 document.addEventListener('DOMContentLoaded', function() {
     carregarCarrinho();
     iniciarContagemRegressiva();
+ // Adicionar chamada para atualizar ícone na inicialização
     // Adicionar event listener para fechar modal ao clicar fora
     document.addEventListener('click', function(event) {
         const modal = document.getElementById('modal');
@@ -24,6 +25,7 @@ function carregarCarrinho() {
         carrinho = JSON.parse(carrinhoSalvo);
         total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
         atualizarCarrinho();
+ // Atualizar ícone após carregar
     }
 }
 
@@ -45,7 +47,8 @@ function adicionarAoCarrinho(produto, preco) {
     }
     total += preco * quantidade;
     salvarCarrinho();
-    atualizarCarrinho();
+    window.location.href = "/paginaPay.html";
+    atualizarCarrinho(); // Atualizar ícone após adicionar
     alert(`${quantidade} x ${produto} adicionado(s) ao carrinho!`);
 }
 
@@ -54,7 +57,16 @@ function removerDoCarrinho(index) {
     total -= carrinho[index].preco * carrinho[index].quantidade;
     carrinho.splice(index, 1);
     salvarCarrinho();
-    atualizarCarrinho();
+    atualizarCarrinho(); // Atualizar ícone após remover
+}
+
+// Método para atualizar o ícone do carrinho com a quantidade total de itens
+function atualizarIconeCarrinho() {
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) {
+        const quantidadeTotal = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+        cartCount.textContent = quantidadeTotal;
+    }
 }
 
 // Função para atualizar display do carrinho
@@ -89,20 +101,16 @@ function toggleCarrinho() {
         carrinhoDiv.style.display = 'block';
         overlay.style.display = 'block';
     }
+    // Removido: window.location.href = "/paginaPay.html"; // Isso não deveria estar aqui, pois toggleCarrinho() apenas abre/fecha o carrinho
 }
 
-// Função para finalizar compra
+// Função para finalizar compra (agora abre modal de pagamento Pix)
 function finalizarCompra() {
     if (carrinho.length === 0) {
         alert('Seu carrinho está vazio!');
-    } else {
-        alert(`Compra finalizada! Total: R$ ${total.toFixed(2)}`);
-        carrinho = [];
-        total = 0;
-        salvarCarrinho();
-        atualizarCarrinho();
-        toggleCarrinho();
+        return;
     }
+    abrirModalPix();
 }
 
 // Função para alterar quantidade
@@ -115,7 +123,7 @@ function alterarQuantidade(event, produto, delta) {
     quantidadeSpan.textContent = quantidade;
 }
 
-// Função para abrir modal
+// Função para abrir modal de produto
 function abrirModal(titulo, descricao, imagem, preco) {
     const modal = document.createElement('div');
     modal.id = 'modal';
@@ -140,6 +148,64 @@ function fecharModal() {
     }
 }
 
+// Função para abrir modal de pagamento Pix
+function abrirModalPix() {
+    const modal = document.createElement('div');
+    modal.id = 'modal-pix';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <span class="close" onclick="fecharModalPix()">&times;</span>
+        <h3>Pagamento via Pix</h3>
+        <p>Total a pagar: R$ ${total.toFixed(2)}</p>
+        <p>Chave Pix: asafea49@gmail.com</p>
+        <div id="qrcode"></div>
+        <p>Escaneie o QR Code com seu app de banco para pagar.</p>
+        <button onclick="confirmarPagamento()">Confirmar Pagamento</button>
+    `;
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+
+    // Gerar QR Code Pix
+    gerarQRCodePix();
+}
+
+// Função para fechar modal Pix
+function fecharModalPix() {
+    const modal = document.getElementById('modal-pix');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Função para gerar QR Code Pix
+function gerarQRCodePix() {
+    // Dados do Pix (simplificado; em produção, use uma API para gerar corretamente)
+    const chavePix = 'asafea49@gmail.com';
+    const valor = total.toFixed(2);
+    const descricao = 'Compra The Garage';
+
+    const pixString = `00020101021126360014BR.GOV.BCB.PIX0111${chavePix}5204000053039865404${valor}5802BR5913The Garage6009SAO PAULO62070503***6304`; 
+    const qrcode = new QRCode(document.getElementById('qrcode'), {
+        text: pixString,
+        width: 256,
+        height: 256,
+    });
+}
+
+// Função para confirmar pagamento (simulação)
+function confirmarPagamento() {
+    alert('Pagamento confirmado! Obrigado pela compra.');
+    carrinho = [];
+    total = 0;
+    salvarCarrinho();
+    atualizarCarrinho(); 
+    fecharModalPix();
+    toggleCarrinho();
+}
+function atualizarIconeCarrinho() {
+    console.log("Atualizando ícone do carrinho e redirecionando para página de pagamento.");
+     window.location.href = "/paginaPay.html";
+}
 // Função para contagem regressiva (24 horas)
 function iniciarContagemRegressiva() {
     const countdownElement = document.getElementById('countdown');

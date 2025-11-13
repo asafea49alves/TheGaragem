@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - The Garage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Para ícones -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> <!-- Para QR Code -->
+    <style>
+        /* Paleta de cores: Marrom (#8B4513), Verde (#228B22), Bege (#F5F5DC) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #F5F5DC 0%, #E8E8D0 100%); /* Gradiente bege suave */
+            color: #8B4513; /* Marrom */
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        header {
+            background: linear-gradient(90deg, #228B22 0%, #32CD32 100%); /* Gradiente verde */
+            color: #F5F5DC; /* Bege */
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        nav h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        nav p {
+            font-size: 1.2em;
+            margin: 5px 0 0 0;
+            font-style: italic;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+        .nav-links li a {
+            color: #F5F5DC;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-links li a:hover, .nav-links li a:focus {
+            background-color: #8B4513; /* Marrom */
+            transform: scale(1.05);
+            outline: 2px solid #F5F5DC;
+        }
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        section {
+            margin-bottom: 60px;
+            padding: 20px;
+            background-color: rgba(245, 245, 220, 0.9); /* Bege semi-transparente */
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        section h2 {
+            color: #228B22; /* Verde */
+            border-bottom: 3px solid #8B4513; /* Marrom */
+            padding-bottom: 10px;
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .resumo-carrinho {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .itens {
+            background-color: #F5F5DC;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #8B4513;
+        }
+        .itens h3 {
+            color: #228B22;
+            margin-top: 0;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: rgba(139, 69, 19, 0.1); /* Marrom claro */
+            border-radius: 5px;
+        }
+        .item button {
+            background-color: #8B4513;
+            color: #F5F5DC;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .item button:hover {
+            background-color: #A0522D;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #8B4513;
+            text-align: right;
+            margin-top: 20px;
+        }
+        .pagamento {
+            background-color: #F5F5DC;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #8B4513;
+            text-align: center;
+        }
+        .pagamento h3 {
+            color: #228B22;
+            margin-top: 0;
+        }
+        #qrcode {
+            margin: 20px auto;
+            width: 256px;
+            height: 256px;
+        }
+        button {
+            background: linear-gradient(45deg, #228B22, #32CD32); /* Gradiente verde */
+            color: #F5F5DC; /* Bege */
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button:hover, button:focus {
+            background: linear-gradient(45deg, #8B4513, #A0522D); /* Gradiente marrom */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            outline: 2px solid #F5F5DC;
+        }
+        footer {
+            background: linear-gradient(90deg, #8B4513 0%, #A0522D 100%); /* Gradiente marrom */
+            color: #F5F5DC; /* Bege */
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 40px;
+        }
+        footer .social-links {
+            margin-top: 20px;
+        }
+        footer .social-links a {
+            color: #F5F5DC;
+            margin: 0 15px;
+            font-size: 1.5em;
+            transition: color 0.3s ease;
+        }
+        footer .social-links a:hover {
+            color: #228B22;
+        }
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .resumo-carrinho {
+                grid-template-columns: 1fr;
+            }
+            nav {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                margin-top: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div>
+                <h1>The Garage</h1>
+                <p>Onde os sabores são criados na garagem</p>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#agua-de-coco">Água de Coco</a></li>
+                <li><a href="index.html#sorvetes">Sorvetes</a></li>
+                <li><a href="index.html#sobre">Sobre Nós</a></li>
+                <li><a href="index.html#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="pagamento">
+            <h2>Pagamento via Pix</h2>
+            <div class="resumo-carrinho">
+                <div class="itens">
+                    <h3>Resumo do Pedido</h3>
+                    <div id="resumo-itens"></div>
+                    <div class="total">Total: R$ <span id="total-pagamento">0.00</span></div>
+                    <button onclick="limparCarrinho()" style="margin-top: 20px; width: 100%;">Limpar Carrinho</button>
+                </div>
+                <div class="pagamento">
+                    <h3>Método de Pagamento: Pix</h3>
+                    <p>Chave Pix: asafea49@gmail.com</p>
+                    <div id="qrcode"></div>
+                    <p>Escaneie o QR Code com seu app de banco para pagar.</p>
+                    <button onclick="confirmarPagamento()">Confirmar Pagamento</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 The Garage. Todos os direitos reservados.</p>
+        <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+    </footer>
+
+    <script>
+        // Variáveis globais
+        let carrinho = [];
+        let total = 0;
+
+        // Carregar carrinho ao iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarCarrinho();
+            mostrarResumo();
+            gerarQRCodePix();
+        });
+
+        // Função para carregar carrinho do localStorage
+        function carregarCarrinho() {
+            const carrinhoSalvo = localStorage.getItem('carrinho');
+            if (carrinhoSalvo) {
+                carrinho = JSON.parse(carrinhoSalvo);
+                total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            } else {
+                alert('Carrinho vazio! Redirecionando para a loja.');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Função para salvar carrinho no localStorage
+        function salvarCarrinho() {
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        }
+
+        // Método para remover um item específico do carrinho por índice
+        function removerDoCarrinho(index) {
+            if (index >= 0 && index < carrinho.length) {
+                total -= carrinho[index].preco * carrinho[index].quantidade;
+                carrinho.splice(index, 1);
+                salvarCarrinho();
+                mostrarResumo();
+                gerarQRCodePix(); // Regenerar QR Code com novo total
+                alert('Item removido do carrinho!');
+            } else {
+                alert('Erro: Item não encontrado.');
+            }
+        }
+
+        // Método para remover um item específico do carrinho por nome (alternativo)
+        function removerItemPorNome(nome) {
+            const index = carrinho.findIndex(item => item.nome === nome);
+            if (index !== -1) {
+                total -= carrinho[index].preco * carrinho[index].quantidade;
+                carrinho.splice(index, 1);
+                salvarCarrinho();
+                mostrarResumo();
+                gerarQRCodePix();
+                alert(`${nome} removido do carrinho!`);
+            } else {
+                alert('Erro: Item não encontrado.');
+            }
+        }
+
+        // Método para limpar todo o carrinho
+        function limparCarrinho() {
+            if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
+                carrinho = [];
+                total = 0;
+                salvarCarrinho();
+                mostrarResumo();
+                gerarQRCodePix();
+                alert('Carrinho limpo!');
+            }
+        }
+
+        // Função para mostrar resumo do carrinho
+        function mostrarResumo() {
+            const resumoItens = document.getElementById('resumo-itens');
+            const totalSpan = document.getElementById('total-pagamento');
+
+            resumoItens.innerHTML = '';
+            carrinho.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span>${item.quantidade} x ${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+                    <button onclick="removerDoCarrinho(${index})">Remover</button>
+                `;
+                resumoItens.appendChild(div);
+            });
+
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+        // Função para gerar QR Code Pix
+        function gerarQRCodePix() {
+            // Limpar QR Code anterior se existir
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = '';
+
+            // Dados do Pix (simplificado; em produção, use uma API para gerar corretamente)
+            const chavePix = 'asafea49@gmail.com';
+            const valor = total.toFixed(2);
+            const descricao = 'Compra The Garage';
+
+            // String Pix simplificada (formato básico; para produção, use biblioteca Pix completa)
+            const pixString = `00020101021126360014BR.GOV.BCB.PIX0111${chavePix}5204000053039865404${valor}5802BR5913The Garage6009SAO PAULO62070503***6304`; // Exemplo simplificado
+
+            // Gerar QR Code
+            const qrcode = new QRCode(qrcodeContainer, {
+                text: pixString,
+                width: 256,
+                height: 256,
+            });
+        }
+
+        // Função para confirmar pagamento (simulação)
+        // function confirmarPagamento() {
+        //     alert('Pagamento confirmado! Obrigado pela compra.');
+        //     localStorage.removeItem('carrinho'); // Limpar carrinho
+        //     window.location.href = 'index.html'; // Redirecionar para home
+        // }
+    </script>
+</body>
+</html>
